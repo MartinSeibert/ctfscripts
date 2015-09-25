@@ -58,6 +58,7 @@ def checkKeywords(text):
 #checkKeywords('asdfflag{broha}m')
 
 def checkKeywords_test():
+	print "Testing checkKeywords()"
 	print "Case 1: asfdasfnnfnasdfon:"
 	checkKeywords('asfdasfnnfnasdfon')
 	print "\n\n"
@@ -68,8 +69,12 @@ def checkKeywords_test():
 	print "test runs base64encoded == " + base64.b64encode('fgughasnasdfflag{dudebro}')
 	checkKeywords(base64.b64encode('fgughasnasdfflag{dudebro}'))
 	
+	print "-------------------------------------------------------------"
+	return
+
+	
+def testAll():
+	checkKeywords_test()
 	return
 	
-	
-	
-checkKeywords_test()
+#testAll()
