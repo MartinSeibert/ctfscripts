@@ -1,4 +1,5 @@
-import base64
+import sys, urllib, re, urlparse, base64
+from bs4 import BeautifulSoup
 
 '''
 Searches text for flag{ or key{, or any specified keywords and prints the substring
@@ -55,8 +56,39 @@ def checkKeywords(text):
 		except:
 			print "Base32 doesn't work, it's doubtful that the text was base32 encrypted."
 	return
-#checkKeywords('asdfflag{broha}m')
 
+def checkWebpageForKeywords(url):
+	
+	# create beautifulSoup object for parsing the page
+	f = urllib.urlopen(url)
+	soup = BeautifulSoup(f)
+	
+	#check for keywords in the text of the page
+	text = soup.get_text()
+	checkKeywords(text)
+	
+	
+	for i in soup.findAll('img', attrs={'src': re.compile('(?i)(jpg|png)$')}):
+		full_url = urlparse.urljoin(url, i['src'])
+	#	print "image URL: ", full_url
+    
+	for i in soup.findAll('script', attrs={'src': re.compile('(?i)(js)$')}):
+		full_url = urlparse.urljoin(url, i['src'])
+	#	print "script URL: ", full_url
+		
+	#for link in soup.find_all('a'):
+	#	print(link.get('href'))
+	return
+
+#checkWebpageForKeywords('http://www.reddit.com')
+
+
+
+
+
+
+
+# TESTS
 def checkKeywords_test():
 	print "Testing checkKeywords()"
 	print "Case 1: asfdasfnnfnasdfon:"
@@ -68,7 +100,9 @@ def checkKeywords_test():
 	print "Case 3: plaintext == fgughasnasdfflag{dudebro} "
 	print "test runs base64encoded == " + base64.b64encode('fgughasnasdfflag{dudebro}')
 	checkKeywords(base64.b64encode('fgughasnasdfflag{dudebro}'))
-	
+	print "\n\n"
+	print "Case 4: plaintext == asdfkeydudebroasfnas;idnf"
+	checkKeywords('asdfkeydudebroasfnas;idnf')
 	print "-------------------------------------------------------------"
 	return
 
