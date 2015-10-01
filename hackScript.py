@@ -1,6 +1,8 @@
 import sys, urllib, re, urlparse, base64
 from bs4 import BeautifulSoup
 
+# -*- coding: utf-8 -*-
+
 '''
 Searches text for flag{ or key{, or any specified keywords and prints the substring
 It attempts to print everything from the found keyword to an endbracket '}'.
@@ -19,10 +21,12 @@ def checkKeywords(text):
 			print "Found '" + keyword + "'"
 			start = text.find(keyword)
 			end = text.find('}')
-			if end == -1:
+			if end == -1 or end < start:
+			
 				print text[start:]
 			else:
-				print text[start:end + 1]
+				print "end not -1 or less than"
+				print text[start:end]
 	if foundSomething == False:
 		print "No matches found, trying base64 decoding"
 		try:
@@ -64,8 +68,9 @@ def checkWebpageForKeywords(url):
 	soup = BeautifulSoup(f)
 	
 	#check for keywords in the text of the page
-	text = soup.get_text()
+	text = soup.get_text().encode('utf-8')
 	checkKeywords(text)
+	
 	
 	
 	for i in soup.findAll('img', attrs={'src': re.compile('(?i)(jpg|png)$')}):
@@ -80,7 +85,7 @@ def checkWebpageForKeywords(url):
 	#	print(link.get('href'))
 	return
 
-#checkWebpageForKeywords('http://www.reddit.com')
+checkWebpageForKeywords('http://www.reddit.com')
 
 
 
