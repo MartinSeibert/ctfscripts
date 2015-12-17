@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 
 # -*- coding: utf-8 -*-
 
+
 '''
 Searches text for flag{ or key{, or any specified keywords and prints the substring
 It attempts to print everything from the found keyword to an endbracket '}'.
@@ -65,28 +66,58 @@ def checkWebpageForKeywords(url):
 	
 	# create beautifulSoup object for parsing the page
 	f = urllib.urlopen(url)
-	soup = BeautifulSoup(f)
+	soup = BeautifulSoup(f, "html.parser")
 	
 	#check for keywords in the text of the page
 	text = soup.get_text().encode('utf-8')
-	checkKeywords(text)
+	#checkKeywords(text)
 	
 	
 	
 	for i in soup.findAll('img', attrs={'src': re.compile('(?i)(jpg|png)$')}):
 		full_url = urlparse.urljoin(url, i['src'])
-	#	print "image URL: ", full_url
+		print "image URL: ", full_url
     
 	for i in soup.findAll('script', attrs={'src': re.compile('(?i)(js)$')}):
 		full_url = urlparse.urljoin(url, i['src'])
-	#	print "script URL: ", full_url
+		print "script URL: ", full_url
 		
-	#for link in soup.find_all('a'):
-	#	print(link.get('href'))
+	for link in soup.find_all('a'):
+		print "link: ", (link.get('href'))
 	return
 
-checkWebpageForKeywords('http://www.reddit.com')
+#checkWebpageForKeywords('http://www.reddit.com')
 
+
+'''
+A class that takes in a url and exposes details about that webpage
+'''
+class Webpage:
+	def __init__(self, url):
+		self.url = url
+		f = urllib.urlopen(url)
+		self.soup = BeautifulSoup(f, "html.parser")
+	def checkText(self):
+		#check for keywords in the text of the page
+		text = self.soup.get_text().encode('utf-8')
+		checkKeywords(text)
+
+	def listImages(self):
+		# list all of the images referenced on the URL
+		for i in self.soup.findAll('img', attrs={'src': re.compile('(?i)(jpg|png)$')}):
+			full_url = urlparse.urljoin(self.url, i['src'])
+			print "image URL: ", full_url
+
+	def listScripts(self):
+		# list all of the scripts referenced by the URL
+		for i in self.soup.findAll('script', attrs={'src': re.compile('(?i)(js)$')}):
+			full_url = urlparse.urljoin(self.url, i['src'])
+			print "script URL: ", full_url
+
+	def listLinks(self):
+		# list all of the links from the URL
+		for link in self.soup.find_all('a'):
+			print "link: ", (link.get('href'))
 
 
 
@@ -111,9 +142,18 @@ def checkKeywords_test():
 	print "-------------------------------------------------------------"
 	return
 
+def webpage_test(url):
+	webpage = Webpage(url)
+	webpage.checkText()
+	webpage.listImages()
+	webpage.listScripts()
+	webpage.listLinks()
+
+
 	
 def testAll():
 	checkKeywords_test()
+	webpage_test('http://www.reddit.com')
 	return
 	
 #testAll()
